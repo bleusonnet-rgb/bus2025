@@ -23,6 +23,13 @@
             --status-gradient-2: #eff6ff;
             --next-gradient-1: #dbeafe;
             --next-gradient-2: #eff6ff;
+            --status-active-bg-1: #dbeafe;
+            --status-active-bg-2: #eff6ff;
+            --status-active-text: #2563eb;
+            --status-active-border: #2563eb;
+            --status-noservice-bg: #f1f5f9;
+            --status-noservice-text: #1e293b;
+            --status-noservice-border: #e2e8f0;
         }
         
         body.dark-theme {
@@ -42,6 +49,13 @@
             --status-gradient-2: #1e40af;
             --next-gradient-1: #1e3a8a;
             --next-gradient-2: #1e40af;
+            --status-active-bg-1: #15803d;
+            --status-active-bg-2: #16a34a;
+            --status-active-text: #ffffff;
+            --status-active-border: #16a34a;
+            --status-noservice-bg: #1e293b;
+            --status-noservice-text: #ffffff;
+            --status-noservice-border: #1e293b;
         }
         body {
             font-family: "LINE Seed Sans JP", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
@@ -123,8 +137,9 @@
             color: var(--primary-color);
             font-weight: 600;
             background: linear-gradient(135deg, var(--status-gradient-1) 0%, var(--status-gradient-2) 100%);
+            transition: all 0.3s ease;
         }
-        .status-detail { display: block; font-size: 0.85rem; margin-top: 4px; color: #555; font-weight: normal;}
+        .status-detail { display: block; font-size: 0.85rem; margin-top: 4px; color: var(--text-color); font-weight: normal; opacity: 0.8; }
 
         /* Tabs */
         .tabs {
@@ -189,7 +204,7 @@
             box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
         }
         
-        .time-main { font-size: 1.3rem; font-family: monospace; }
+        .time-main { font-size: 1.3rem; font-family: "LINE Seed Sans JP", monospace; font-weight: 600; }
         .dest-badge {
             font-size: 0.8rem;
             padding: 2px 6px;
@@ -451,14 +466,14 @@
         
         // 色変更
         if (typeObj === TYPES.NO_SERVICE) {
-            statusBox.style.borderColor = "#ccc";
-            statusBox.style.color = "#555";
-            statusBox.style.background = "#eee";
+            statusBox.style.borderColor = "var(--status-noservice-border)";
+            statusBox.style.color = "var(--status-noservice-text)";
+            statusBox.style.background = "var(--status-noservice-bg)";
             detailDisplay.textContent = "本日の運行はありません";
         } else {
-            statusBox.style.borderColor = typeObj.color;
-            statusBox.style.color = typeObj.color;
-            statusBox.style.background = "#fff";
+            statusBox.style.borderColor = "var(--status-active-border)";
+            statusBox.style.color = "var(--status-active-text)";
+            statusBox.style.background = "linear-gradient(135deg, var(--status-active-bg-1) 0%, var(--status-active-bg-2) 100%)";
             detailDisplay.textContent = "通常運行";
         }
 
@@ -530,4 +545,3 @@
 
 </body>
 </html>
-
