@@ -7,11 +7,41 @@
     <link href="https://fonts.googleapis.com/css2?family=LINE+Seed+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #0056b3;
-            --highlight-color: #ffeb3b;
-            --bg-color: #f4f4f9;
-            --text-color: #333;
-            --accent-red: #d32f2f;
+            --primary-color: #2563eb;
+            --highlight-color: #60a5fa;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --accent-red: #ef4444;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --tab-bg: #f1f5f9;
+            --tab-text: #64748b;
+            --control-bg: #f1f5f9;
+            --past-bg: #f9f9f9;
+            --past-text: #aaa;
+            --status-gradient-1: #dbeafe;
+            --status-gradient-2: #eff6ff;
+            --next-gradient-1: #dbeafe;
+            --next-gradient-2: #eff6ff;
+        }
+        
+        body.dark-theme {
+            --primary-color: #3b82f6;
+            --highlight-color: #60a5fa;
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --accent-red: #f87171;
+            --border-color: #334155;
+            --card-bg: #1e293b;
+            --tab-bg: #334155;
+            --tab-text: #94a3b8;
+            --control-bg: #334155;
+            --past-bg: #1e293b;
+            --past-text: #64748b;
+            --status-gradient-1: #1e3a8a;
+            --status-gradient-2: #1e40af;
+            --next-gradient-1: #1e3a8a;
+            --next-gradient-2: #1e40af;
         }
         body {
             font-family: "LINE Seed Sans JP", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
@@ -24,12 +54,25 @@
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            transition: background 0.3s ease;
         }
-        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; }
+        h1 { 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 10px; 
+            font-weight: 700; 
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            user-select: none;
+        }
+        h1:hover {
+            transform: scale(1.02);
+            opacity: 0.8;
+        }
         
         /* Controls */
         .controls {
@@ -37,36 +80,49 @@
             gap: 10px;
             margin-bottom: 15px;
             justify-content: center;
-            background: #eef;
-            padding: 10px;
-            border-radius: 8px;
+            background: var(--control-bg);
+            padding: 12px;
+            border-radius: 12px;
             flex-wrap: wrap;
+            transition: background 0.3s ease;
         }
         input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
         button.now-btn {
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        button.now-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         /* Status Display */
         .status-box {
             text-align: center;
             margin-bottom: 20px;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid var(--primary-color);
-            border-radius: 8px;
+            border-radius: 12px;
             color: var(--primary-color);
-            font-weight: bold;
-            background: #e3f2fd;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--status-gradient-1) 0%, var(--status-gradient-2) 100%);
         }
         .status-detail { display: block; font-size: 0.85rem; margin-top: 4px; color: #555; font-weight: normal;}
 
@@ -81,24 +137,32 @@
             flex: 1;
             text-align: center;
             padding: 12px;
-            background: #ddd;
+            background: var(--tab-bg);
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
-            transition: background 0.2s;
+            transition: all 0.3s ease;
+            color: var(--tab-text);
+            font-weight: 500;
         }
         .tab.active {
             background: var(--primary-color);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+        }
+        .tab:hover:not(.active) {
+            background: #e2e8f0;
         }
 
         /* Timetable List */
         .timetable-container {
             height: 400px;
             overflow-y: auto;
-            border: 1px solid #ccc;
+            border: 2px solid var(--border-color);
             border-top: none;
-            background: #fff;
+            background: var(--card-bg);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
         .timetable {
             list-style: none;
@@ -115,13 +179,14 @@
         .timetable li:last-child { border-bottom: none; }
         
         .timetable li.past {
-            color: #aaa;
-            background: #f9f9f9;
+            color: var(--past-text);
+            background: var(--past-bg);
         }
         .timetable li.next {
-            background-color: var(--highlight-color);
-            font-weight: bold;
-            border-left: 5px solid #fbc02d;
+            background: linear-gradient(90deg, var(--next-gradient-1) 0%, var(--next-gradient-2) 100%);
+            font-weight: 600;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
         }
         
         .time-main { font-size: 1.3rem; font-family: monospace; }
@@ -150,7 +215,7 @@
 <body>
 
 <div class="container">
-    <h1>教職員通勤バス (2025)</h1>
+    <h1>🚌 教職員通勤バス (2025)</h1>
 
     <div class="controls">
         <input type="date" id="dateInput">
@@ -264,6 +329,12 @@
 	}, 3 * 60 * 1000); // 3分 = 180,000ミリ秒
         updateTabUI();
 
+        // 保存されたテーマを復元
+        const savedTheme = localStorage.getItem('busTheme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+        }
+
         // イベントリスナーの設定
         document.getElementById('dateInput').addEventListener('input', updateDisplay);
         document.getElementById('timeInput').addEventListener('input', updateDisplay);
@@ -273,7 +344,16 @@
         document.getElementById('tabUniv').addEventListener('click', () => switchTab('univ'));
         document.getElementById('tabStation').addEventListener('click', () => switchTab('station'));
 
+        // タイトルクリックでテーマ切り替え
+        document.querySelector('h1').addEventListener('click', toggleTheme);
+
         setNow();
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
+        localStorage.setItem('busTheme', isDark ? 'dark' : 'light');
     }
 
     // 日付からダイヤタイプを取得
