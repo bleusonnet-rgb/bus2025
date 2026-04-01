@@ -1,548 +1,655 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>教職員バス時刻表 (令和7年度)</title>
-    <link href="https://fonts.googleapis.com/css2?family=LINE+Seed+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2563eb;
-            --highlight-color: #60a5fa;
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --accent-red: #ef4444;
-            --border-color: #e2e8f0;
-            --card-bg: #ffffff;
-            --tab-bg: #f1f5f9;
-            --tab-text: #64748b;
-            --control-bg: #f1f5f9;
-            --past-bg: #f9f9f9;
-            --past-text: #aaa;
-            --status-gradient-1: #dbeafe;
-            --status-gradient-2: #eff6ff;
-            --next-gradient-1: #dbeafe;
-            --next-gradient-2: #eff6ff;
-            --status-active-bg-1: #dbeafe;
-            --status-active-bg-2: #eff6ff;
-            --status-active-text: #2563eb;
-            --status-active-border: #2563eb;
-            --status-noservice-bg: #f1f5f9;
-            --status-noservice-text: #1e293b;
-            --status-noservice-border: #e2e8f0;
-        }
-        
-        body.dark-theme {
-            --primary-color: #3b82f6;
-            --highlight-color: #60a5fa;
-            --bg-color: #0f172a;
-            --text-color: #e2e8f0;
-            --accent-red: #f87171;
-            --border-color: #334155;
-            --card-bg: #1e293b;
-            --tab-bg: #334155;
-            --tab-text: #94a3b8;
-            --control-bg: #334155;
-            --past-bg: #1e293b;
-            --past-text: #64748b;
-            --status-gradient-1: #1e3a8a;
-            --status-gradient-2: #1e40af;
-            --next-gradient-1: #1e3a8a;
-            --next-gradient-2: #1e40af;
-            --status-active-bg-1: #15803d;
-            --status-active-bg-2: #16a34a;
-            --status-active-text: #ffffff;
-            --status-active-border: #16a34a;
-            --status-noservice-bg: #1e293b;
-            --status-noservice-text: #ffffff;
-            --status-noservice-border: #1e293b;
-        }
-        body {
-            font-family: "LINE Seed Sans JP", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-            font-weight: 400;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            transition: background 0.3s ease;
-        }
-        h1 { 
-            text-align: center; 
-            font-size: 2.5rem; 
-            margin-bottom: 10px; 
-            font-weight: 700; 
-            cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-            user-select: none;
-        }
-        h1:hover {
-            transform: scale(1.02);
-            opacity: 0.8;
-        }
-        
-        /* Controls */
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            justify-content: center;
-            background: var(--control-bg);
-            padding: 12px;
-            border-radius: 12px;
-            flex-wrap: wrap;
-            transition: background 0.3s ease;
-        }
-        input {
-            padding: 8px 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s ease;
-        }
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        button.now-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        button.now-btn:hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教職員通勤バス時刻表</title>
+<link href="https://fonts.googleapis.com/css2?family=LINE+Seed+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pri: #2563eb;
+  --pri-light: #dbeafe;
+  --pri-dark: #1d4ed8;
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --past-bg: #f8fafc;
+  --past-text: #b0bec5;
+  --next-bg: #eff6ff;
+  --gc-bg: #fffbeb;
+  --gc-border: #f59e0b;
+  --gc-text: #92400e;
+  --panel-bg: #f8fafc;
+  --s-授業: #22c55e; --sb-授業: #dcfce7; --st-授業: #14532d;
+  --s-学休: #3b82f6; --sb-学休: #dbeafe; --st-学休: #1e3a8a;
+  --s-運休: #94a3b8; --sb-運休: #f1f5f9; --st-運休: #475569;
+  --s-夏休: #f59e0b; --sb-夏休: #fef3c7; --st-夏休: #78350f;
+  --s-OC:   #8b5cf6; --sb-OC:   #ede9fe; --st-OC:   #3b0764;
+  --s-例祭: #ec4899; --sb-例祭: #fce7f3; --st-例祭: #831843;
+}
+body.dark {
+  --pri: #3b82f6; --pri-light: #1e3a8a; --pri-dark: #60a5fa;
+  --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8;
+  --border: #334155; --past-bg: #1e293b; --past-text: #4b5563;
+  --next-bg: #1e3a8a; --gc-bg: #292524; --gc-border: #d97706; --gc-text: #fde68a;
+  --panel-bg: #0f172a;
+  --sb-授業:#14532d; --st-授業:#bbf7d0;
+  --sb-学休:#1e3a8a; --st-学休:#bfdbfe;
+  --sb-運休:#1e293b; --st-運休:#94a3b8;
+  --sb-夏休:#78350f; --st-夏休:#fde68a;
+  --sb-OC:#3b0764;   --st-OC:#ddd6fe;
+  --sb-例祭:#831843; --st-例祭:#fbcfe8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"LINE Seed Sans JP",-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
 
-        /* Status Display */
-        .status-box {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 12px;
-            border: 2px solid var(--primary-color);
-            border-radius: 12px;
-            color: var(--primary-color);
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--status-gradient-1) 0%, var(--status-gradient-2) 100%);
-            transition: all 0.3s ease;
-        }
-        .status-detail { display: block; font-size: 0.85rem; margin-top: 4px; color: var(--text-color); font-weight: normal; opacity: 0.8; }
+/* ── NAV TABS ── */
+.page-nav{display:flex;gap:2px;max-width:660px;margin:0 auto;padding:16px 16px 0}
+.page-tab{flex:1;text-align:center;padding:10px 8px;font-size:0.85rem;font-weight:700;border-radius:10px 10px 0 0;cursor:pointer;background:var(--border);color:var(--muted);transition:all .2s;letter-spacing:.03em}
+.page-tab.active{background:var(--card);color:var(--pri);box-shadow:0 -2px 8px rgba(0,0,0,.06)}
+.page-tab:hover:not(.active){background:var(--card);opacity:.8}
 
-        /* Tabs */
-        .tabs {
-            display: flex;
-            margin-bottom: 0;
-            cursor: pointer;
-            border-bottom: 2px solid var(--primary-color);
-        }
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px;
-            background: var(--tab-bg);
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            transition: all 0.3s ease;
-            color: var(--tab-text);
-            font-weight: 500;
-        }
-        .tab.active {
-            background: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-        .tab:hover:not(.active) {
-            background: #e2e8f0;
-        }
+/* ── CONTAINER ── */
+.container{max-width:660px;margin:0 auto;background:var(--card);border-radius:0 0 18px 18px;box-shadow:0 4px 32px rgba(0,0,0,.10);overflow:hidden;transition:background .3s}
+.page{display:none;padding:22px}
+.page.active{display:block}
 
-        /* Timetable List */
-        .timetable-container {
-            height: 400px;
-            overflow-y: auto;
-            border: 2px solid var(--border-color);
-            border-top: none;
-            background: var(--card-bg);
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        .timetable {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .timetable li {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 15px;
-            border-bottom: 1px solid #eee;
-            align-items: center;
-        }
-        .timetable li:last-child { border-bottom: none; }
-        
-        .timetable li.past {
-            color: var(--past-text);
-            background: var(--past-bg);
-        }
-        .timetable li.next {
-            background: linear-gradient(90deg, var(--next-gradient-1) 0%, var(--next-gradient-2) 100%);
-            font-weight: 600;
-            border-left: 4px solid var(--primary-color);
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
-        }
-        
-        .time-main { font-size: 1.3rem; font-family: "LINE Seed Sans JP", monospace; font-weight: 600; }
-        .dest-badge {
-            font-size: 0.8rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #eee;
-            color: #555;
-        }
-        .next-label {
-            font-size: 0.8rem;
-            color: #d32f2f;
-            font-weight: bold;
-            margin-left: 10px;
-        }
+/* ── HEADER ── */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.header h1{font-size:1.5rem;font-weight:700;cursor:pointer;transition:opacity .2s;user-select:none}
+.header h1:hover{opacity:.7}
+.year-pill{font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--pri-light);color:var(--pri);letter-spacing:.05em}
 
-        .no-service {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--accent-red);
-            font-weight: bold;
-        }
-    </style>
+/* ── CONTROLS ── */
+.controls{display:flex;gap:8px;flex-wrap:wrap;background:var(--panel-bg);padding:10px;border-radius:12px;margin-bottom:14px;border:1px solid var(--border)}
+.controls input{flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;background:var(--card);color:var(--text);transition:border-color .2s}
+.controls input:focus{outline:none;border-color:var(--pri)}
+.now-btn{padding:7px 16px;background:var(--pri);color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.now-btn:hover{background:var(--pri-dark);transform:translateY(-1px)}
+
+/* ── STATUS ── */
+.status-box{text-align:center;padding:11px 14px;border-radius:12px;border:2px solid var(--pri);background:var(--next-bg);margin-bottom:16px;transition:all .3s}
+.status-box .type{font-weight:700;font-size:1rem;color:var(--pri)}
+.status-box .detail{display:block;font-size:.8rem;color:var(--muted);margin-top:3px}
+.status-box.no-svc{border-color:var(--border);background:var(--panel-bg)}
+.status-box.no-svc .type{color:var(--muted)}
+
+/* ── DIR TABS ── */
+.dir-tabs{display:flex;border-bottom:2px solid var(--pri);margin-bottom:0}
+.dir-tab{flex:1;text-align:center;padding:10px;background:var(--panel-bg);color:var(--muted);font-weight:600;font-size:.88rem;cursor:pointer;border-radius:8px 8px 0 0;transition:all .2s}
+.dir-tab.active{background:var(--pri);color:#fff}
+.dir-tab small{font-weight:400;font-size:.75rem;display:block;margin-top:1px}
+
+/* ── TIMETABLE LIST ── */
+.list-wrap{height:380px;overflow-y:auto;border:1.5px solid var(--border);border-top:none;border-radius:0 0 10px 10px;background:var(--card)}
+.bus-list{list-style:none}
+.bus-list li{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.bus-list li:last-child{border-bottom:none}
+.bus-list li.past{color:var(--past-text);background:var(--past-bg)}
+.bus-list li.next{background:var(--next-bg);border-left:4px solid var(--pri);font-weight:700}
+.bus-list li.gc-stop{background:var(--gc-bg)}
+.time-main{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums}
+.badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.badge{font-size:.73rem;padding:2px 7px;border-radius:5px;font-weight:600;white-space:nowrap}
+.badge.dest{background:var(--border);color:var(--muted)}
+.badge.gc{background:var(--gc-bg);color:var(--gc-text);border:1px solid var(--gc-border)}
+.next-label{font-size:.78rem;color:#d32f2f;font-weight:700;white-space:nowrap}
+.no-svc-msg{text-align:center;padding:40px;color:var(--muted);font-weight:600}
+
+/* ═══ CALENDAR PAGE ═══ */
+.cal-section{margin-bottom:24px}
+.cal-year-title{font-size:.78rem;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border)}
+.month-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.month-card{background:var(--panel-bg);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.month-title{font-size:.85rem;font-weight:700;padding:7px 12px;background:var(--pri);color:#fff;letter-spacing:.04em}
+.cal-table{width:100%;border-collapse:collapse;font-size:.77rem}
+.cal-table th{padding:4px 2px;text-align:center;font-weight:600;font-size:.7rem;color:var(--muted);border-bottom:1px solid var(--border)}
+.cal-table th.sat{color:#3b82f6}
+.cal-table th.sun{color:#ef4444}
+.cal-table td{padding:3px 2px;text-align:center;vertical-align:top}
+.day-cell{display:flex;flex-direction:column;align-items:center;padding:2px;border-radius:5px;min-height:32px;justify-content:center}
+.day-num{font-size:.72rem;color:var(--muted);line-height:1.2}
+.day-num.sat{color:#3b82f6}
+.day-num.sun{color:#ef4444}
+.day-status{font-size:.68rem;font-weight:700;padding:1px 4px;border-radius:3px;line-height:1.4;margin-top:1px}
+.day-status.s-授業{background:var(--sb-授業);color:var(--st-授業)}
+.day-status.s-学休{background:var(--sb-学休);color:var(--st-学休)}
+.day-status.s-運休{background:var(--sb-運休);color:var(--st-運休)}
+.day-status.s-夏休{background:var(--sb-夏休);color:var(--st-夏休)}
+.day-status.s-OC{background:var(--sb-OC);color:var(--st-OC)}
+.day-status.s-例祭{background:var(--sb-例祭);color:var(--st-例祭)}
+.cal-legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;margin-bottom:20px;font-size:.75rem}
+.leg{display:flex;align-items:center;gap:4px}
+.leg-dot{width:10px;height:10px;border-radius:2px}
+
+/* ═══ FULL TIMETABLE PAGE ═══ */
+.sched-section{margin-bottom:28px}
+.sched-title{font-size:.85rem;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border);text-transform:uppercase}
+.sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sched-card{background:var(--panel-bg);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.sched-card-title{font-size:.78rem;font-weight:700;padding:7px 12px;background:var(--pri);color:#fff;display:flex;justify-content:space-between;align-items:center}
+.sched-card-title small{font-weight:400;font-size:.7rem;opacity:.85}
+.hour-row{display:flex;align-items:flex-start;gap:0;border-bottom:1px solid var(--border);min-height:28px}
+.hour-row:last-child{border-bottom:none}
+.hr-label{width:28px;min-width:28px;font-size:.75rem;font-weight:700;color:var(--pri);padding:5px 4px;text-align:right;background:var(--card);flex-shrink:0;border-right:1px solid var(--border)}
+.hr-mins{padding:4px 6px;display:flex;flex-wrap:wrap;gap:3px;align-items:center;flex:1}
+.min-badge{font-size:.75rem;font-weight:600;font-variant-numeric:tabular-nums;padding:1px 5px;border-radius:4px;background:var(--pri-light);color:var(--pri);white-space:nowrap}
+.min-badge.gc{background:var(--gc-bg);color:var(--gc-text);border:1px solid var(--gc-border)}
+.sched-note{font-size:.75rem;color:var(--muted);margin-top:8px;padding:8px 10px;background:var(--panel-bg);border-radius:8px;border:1px solid var(--border);line-height:1.6}
+
+@media(max-width:480px){
+  .sched-grid{grid-template-columns:1fr}
+  .month-grid{grid-template-columns:1fr}
+  .page-tab{font-size:.76rem;padding:9px 4px}
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>教職員通勤バス 2025年度</h1>
-
-    <div class="controls">
-        <input type="date" id="dateInput">
-        <input type="time" id="timeInput">
-        <button class="now-btn" id="nowBtn">現在時刻</button>
-    </div>
-
-    <div class="status-box" id="statusBox">
-        <span id="scheduleTypeDisplay">読み込み中...</span>
-        <span class="status-detail" id="scheduleDetail"></span>
-    </div>
-
-    <div class="tabs">
-        <div class="tab active" id="tabUniv">大学発 <br><small>→ 高尾駅</small></div>
-        <div class="tab" id="tabStation">高尾駅発 <br><small>→ 大学</small></div>
-    </div>
-
-    <div class="timetable-container">
-        <ul class="timetable" id="busList">
-            </ul>
-    </div>
+<div class="page-nav">
+  <div class="page-tab active" onclick="showPage('timetable')">🕐 時刻表</div>
+  <div class="page-tab" onclick="showPage('calendar')">📅 運行日程</div>
+  <div class="page-tab" onclick="showPage('fulltable')">📋 全時刻表</div>
 </div>
 
+<div class="container">
+
+  <!-- ══ PAGE 1: TIMETABLE ══ -->
+  <div class="page active" id="page-timetable">
+    <div class="header">
+      <h1 onclick="toggleTheme()">教職員通勤バス</h1>
+      <span class="year-pill" id="yearBadge">2025年度</span>
+    </div>
+    <div class="controls">
+      <input type="date" id="dateInput">
+      <input type="time" id="timeInput">
+      <button class="now-btn" id="nowBtn">現在時刻</button>
+    </div>
+    <div class="status-box" id="statusBox">
+      <span class="type" id="scheduleTypeDisplay">読み込み中…</span>
+      <span class="detail" id="scheduleDetail"></span>
+    </div>
+    <div class="dir-tabs">
+      <div class="dir-tab active" id="tabUniv" onclick="switchTab('univ')">大学発<small>→ 高尾駅</small></div>
+      <div class="dir-tab" id="tabStation" onclick="switchTab('station')">高尾駅発<small>→ 大学</small></div>
+    </div>
+    <div class="list-wrap">
+      <ul class="bus-list" id="busList"></ul>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: CALENDAR ══ -->
+  <div class="page" id="page-calendar">
+    <div class="header" style="margin-bottom:10px">
+      <h1>運行日程表</h1>
+    </div>
+    <div class="cal-legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--s-授業)"></div>授業期間</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--s-学休)"></div>学生休暇</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--s-夏休)"></div>夏季休暇</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--s-OC)"></div>OC</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--s-例祭)"></div>例祭</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--s-運休)"></div>運休</div>
+    </div>
+    <div class="cal-section">
+      <div class="cal-year-title">2025年度（令和7年度）</div>
+      <div class="month-grid" id="cal2025"></div>
+    </div>
+    <div class="cal-section">
+      <div class="cal-year-title">2026年度（令和8年度）</div>
+      <div class="month-grid" id="cal2026"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: FULL TIMETABLE ══ -->
+  <div class="page" id="page-fulltable">
+    <div class="header" style="margin-bottom:14px">
+      <h1>全時刻表</h1>
+      <span class="year-pill">2025・2026年度</span>
+    </div>
+    <div class="sched-note" style="margin-bottom:18px">
+      ★ 印は <strong>グルメシティ高尾店前</strong> 発（2026年度以降、高尾駅発の一部便）
+    </div>
+    <div id="fullTableContent"></div>
+  </div>
+
+</div><!-- /container -->
+
 <script>
-    // ==========================================
-    // 1. データ定義
-    // ==========================================
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const RAW_CALENDAR_2025 = {
+  "4":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"運休"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"運休"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
+  "5":[{"date":1,"status":"学休"},{"date":2,"status":"学休"},{"date":3,"status":"運休"},{"date":4,"status":"運休"},{"date":5,"status":"運休"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"運休"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"運休"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"運休"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"},{"date":31,"status":"授業"}],
+  "6":[{"date":1,"status":"運休"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"運休"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"運休"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"運休"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"運休"},{"date":30,"status":"授業"}],
+  "7":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"運休"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"運休"},{"date":28,"status":"学休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}],
+  "8":[{"date":1,"status":"夏休"},{"date":2,"status":"OC"},{"date":3,"status":"OC"},{"date":4,"status":"夏休"},{"date":5,"status":"夏休"},{"date":6,"status":"夏休"},{"date":7,"status":"夏休"},{"date":8,"status":"夏休"},{"date":9,"status":"運休"},{"date":10,"status":"運休"},{"date":11,"status":"運休"},{"date":12,"status":"運休"},{"date":13,"status":"運休"},{"date":14,"status":"運休"},{"date":15,"status":"運休"},{"date":16,"status":"運休"},{"date":17,"status":"運休"},{"date":18,"status":"夏休"},{"date":19,"status":"夏休"},{"date":20,"status":"夏休"},{"date":21,"status":"夏休"},{"date":22,"status":"夏休"},{"date":23,"status":"運休"},{"date":24,"status":"運休"},{"date":25,"status":"夏休"},{"date":26,"status":"夏休"},{"date":27,"status":"夏休"},{"date":28,"status":"夏休"},{"date":29,"status":"夏休"},{"date":30,"status":"運休"},{"date":31,"status":"運休"}],
+  "9":[{"date":1,"status":"夏休"},{"date":2,"status":"夏休"},{"date":3,"status":"夏休"},{"date":4,"status":"夏休"},{"date":5,"status":"夏休"},{"date":6,"status":"夏休"},{"date":7,"status":"運休"},{"date":8,"status":"夏休"},{"date":9,"status":"夏休"},{"date":10,"status":"夏休"},{"date":11,"status":"夏休"},{"date":12,"status":"夏休"},{"date":13,"status":"学休"},{"date":14,"status":"運休"},{"date":15,"status":"運休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"学休"},{"date":21,"status":"運休"},{"date":22,"status":"学休"},{"date":23,"status":"運休"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"授業"},{"date":28,"status":"運休"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
+  "10":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"運休"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"運休"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"運休"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"学休"},{"date":27,"status":"運休"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"},{"date":31,"status":"学休"}],
+  "11":[{"date":1,"status":"学休"},{"date":2,"status":"運休"},{"date":3,"status":"例祭"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"運休"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"運休"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"運休"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"運休"}],
+  "12":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"運休"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"運休"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"運休"},{"date":22,"status":"授業"},{"date":23,"status":"学休"},{"date":24,"status":"運休"},{"date":25,"status":"運休"},{"date":26,"status":"運休"},{"date":27,"status":"運休"},{"date":28,"status":"運休"},{"date":29,"status":"運休"},{"date":30,"status":"運休"},{"date":31,"status":"運休"}],
+  "1":[{"date":1,"status":"運休"},{"date":2,"status":"運休"},{"date":3,"status":"運休"},{"date":4,"status":"運休"},{"date":5,"status":"運休"},{"date":6,"status":"学休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"運休"},{"date":12,"status":"運休"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"学休"},{"date":18,"status":"運休"},{"date":19,"status":"運休"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"運休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}],
+  "2":[{"date":1,"status":"運休"},{"date":2,"status":"学休"},{"date":3,"status":"学休"},{"date":4,"status":"学休"},{"date":5,"status":"学休"},{"date":6,"status":"学休"},{"date":7,"status":"学休"},{"date":8,"status":"運休"},{"date":9,"status":"学休"},{"date":10,"status":"学休"},{"date":11,"status":"運休"},{"date":12,"status":"学休"},{"date":13,"status":"学休"},{"date":14,"status":"学休"},{"date":15,"status":"運休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"学休"},{"date":21,"status":"学休"},{"date":22,"status":"運休"},{"date":23,"status":"運休"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"}],
+  "3":[{"date":1,"status":"運休"},{"date":2,"status":"学休"},{"date":3,"status":"学休"},{"date":4,"status":"学休"},{"date":5,"status":"学休"},{"date":6,"status":"学休"},{"date":7,"status":"学休"},{"date":8,"status":"運休"},{"date":9,"status":"学休"},{"date":10,"status":"学休"},{"date":11,"status":"運休"},{"date":12,"status":"学休"},{"date":13,"status":"学休"},{"date":14,"status":"学休"},{"date":15,"status":"運休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"運休"},{"date":21,"status":"学休"},{"date":22,"status":"運休"},{"date":23,"status":"授業"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"},{"date":29,"status":"運休"},{"date":30,"status":"運休"},{"date":31,"status":"学休"}]
+};
+const RAW_CALENDAR_2026 = {
+  "4":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"運休"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"運休"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"運休"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"運休"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
+  "5":[{"date":1,"status":"学休"},{"date":2,"status":"運休"},{"date":3,"status":"運休"},{"date":4,"status":"運休"},{"date":5,"status":"運休"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"運休"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"運休"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"運休"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"},{"date":31,"status":"運休"}],
+  "6":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"運休"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"運休"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"運休"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"運休"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
+  "7":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"運休"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"OC"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"運休"},{"date":20,"status":"運休"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"運休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}],
+  "8":[{"date":1,"status":"OC"},{"date":2,"status":"OC"},{"date":3,"status":"夏休"},{"date":4,"status":"夏休"},{"date":5,"status":"夏休"},{"date":6,"status":"夏休"},{"date":7,"status":"夏休"},{"date":8,"status":"運休"},{"date":9,"status":"運休"},{"date":10,"status":"夏休"},{"date":11,"status":"運休"},{"date":12,"status":"運休"},{"date":13,"status":"運休"},{"date":14,"status":"運休"},{"date":15,"status":"運休"},{"date":16,"status":"運休"},{"date":17,"status":"運休"},{"date":18,"status":"夏休"},{"date":19,"status":"夏休"},{"date":20,"status":"夏休"},{"date":21,"status":"夏休"},{"date":22,"status":"運休"},{"date":23,"status":"運休"},{"date":24,"status":"夏休"},{"date":25,"status":"夏休"},{"date":26,"status":"夏休"},{"date":27,"status":"夏休"},{"date":28,"status":"夏休"},{"date":29,"status":"運休"},{"date":30,"status":"運休"},{"date":31,"status":"夏休"}],
+  "9":[{"date":1,"status":"夏休"},{"date":2,"status":"夏休"},{"date":3,"status":"夏休"},{"date":4,"status":"夏休"},{"date":5,"status":"運休"},{"date":6,"status":"運休"},{"date":7,"status":"夏休"},{"date":8,"status":"夏休"},{"date":9,"status":"夏休"},{"date":10,"status":"夏休"},{"date":11,"status":"学休"},{"date":12,"status":"学休"},{"date":13,"status":"運休"},{"date":14,"status":"学休"},{"date":15,"status":"学休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"運休"},{"date":21,"status":"運休"},{"date":22,"status":"運休"},{"date":23,"status":"運休"},{"date":24,"status":"学休"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"運休"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
+  "10":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"運休"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"運休"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"運休"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"学休"},{"date":25,"status":"運休"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}],
+  "11":[{"date":1,"status":"運休"},{"date":2,"status":"学休"},{"date":3,"status":"例祭"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"運休"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"運休"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"運休"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"運休"},{"date":30,"status":"授業"}],
+  "12":[{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"運休"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"運休"},{"date":24,"status":"運休"},{"date":25,"status":"運休"},{"date":26,"status":"運休"},{"date":27,"status":"運休"},{"date":28,"status":"運休"},{"date":29,"status":"運休"},{"date":30,"status":"運休"},{"date":31,"status":"運休"}],
+  "1":[{"date":1,"status":"運休"},{"date":2,"status":"運休"},{"date":3,"status":"運休"},{"date":4,"status":"運休"},{"date":5,"status":"学休"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"運休"},{"date":11,"status":"運休"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"学休"},{"date":17,"status":"運休"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"学休"},{"date":23,"status":"学休"},{"date":24,"status":"運休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"運休"}],
+  "2":[{"date":1,"status":"学休"},{"date":2,"status":"学休"},{"date":3,"status":"学休"},{"date":4,"status":"学休"},{"date":5,"status":"学休"},{"date":6,"status":"学休"},{"date":7,"status":"運休"},{"date":8,"status":"学休"},{"date":9,"status":"学休"},{"date":10,"status":"学休"},{"date":11,"status":"運休"},{"date":12,"status":"学休"},{"date":13,"status":"学休"},{"date":14,"status":"運休"},{"date":15,"status":"学休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"学休"},{"date":21,"status":"運休"},{"date":22,"status":"学休"},{"date":23,"status":"運休"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"運休"}],
+  "3":[{"date":1,"status":"学休"},{"date":2,"status":"学休"},{"date":3,"status":"学休"},{"date":4,"status":"学休"},{"date":5,"status":"学休"},{"date":6,"status":"学休"},{"date":7,"status":"運休"},{"date":8,"status":"学休"},{"date":9,"status":"学休"},{"date":10,"status":"学休"},{"date":11,"status":"学休"},{"date":12,"status":"学休"},{"date":13,"status":"学休"},{"date":14,"status":"運休"},{"date":15,"status":"学休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"学休"},{"date":21,"status":"運休"},{"date":22,"status":"運休"},{"date":23,"status":"学休"},{"date":24,"status":"授業"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"運休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}]
+};
 
-    // カレンダーデータ
-    const RAW_CALENDAR = {
-      "4": [{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"運休"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"運休"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
-      "5": [{"date":1,"status":"学休"},{"date":2,"status":"学休"},{"date":3,"status":"運休"},{"date":4,"status":"運休"},{"date":5,"status":"運休"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"運休"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"運休"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"運休"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"},{"date":31,"status":"授業"}],
-      "6": [{"date":1,"status":"運休"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"運休"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"運休"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"運休"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"運休"},{"date":30,"status":"授業"}],
-      "7": [{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"運休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"運休"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"運休"},{"date":28,"status":"学休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}],
-      "8": [{"date":1,"status":"夏休"},{"date":2,"status":"OC"},{"date":3,"status":"OC"},{"date":4,"status":"夏休"},{"date":5,"status":"夏休"},{"date":6,"status":"夏休"},{"date":7,"status":"夏休"},{"date":8,"status":"夏休"},{"date":9,"status":"運休"},{"date":10,"status":"運休"},{"date":11,"status":"運休"},{"date":12,"status":"運休"},{"date":13,"status":"運休"},{"date":14,"status":"運休"},{"date":15,"status":"運休"},{"date":16,"status":"運休"},{"date":17,"status":"運休"},{"date":18,"status":"夏休"},{"date":19,"status":"夏休"},{"date":20,"status":"夏休"},{"date":21,"status":"夏休"},{"date":22,"status":"夏休"},{"date":23,"status":"運休"},{"date":24,"status":"運休"},{"date":25,"status":"夏休"},{"date":26,"status":"夏休"},{"date":27,"status":"夏休"},{"date":28,"status":"夏休"},{"date":29,"status":"夏休"},{"date":30,"status":"運休"},{"date":31,"status":"運休"}],
-      "9": [{"date":1,"status":"夏休"},{"date":2,"status":"夏休"},{"date":3,"status":"夏休"},{"date":4,"status":"夏休"},{"date":5,"status":"夏休"},{"date":6,"status":"夏休"},{"date":7,"status":"運休"},{"date":8,"status":"夏休"},{"date":9,"status":"夏休"},{"date":10,"status":"夏休"},{"date":11,"status":"夏休"},{"date":12,"status":"夏休"},{"date":13,"status":"学休"},{"date":14,"status":"運休"},{"date":15,"status":"運休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"学休"},{"date":21,"status":"運休"},{"date":22,"status":"学休"},{"date":23,"status":"運休"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"授業"},{"date":28,"status":"運休"},{"date":29,"status":"授業"},{"date":30,"status":"授業"}],
-      "10": [{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"運休"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"運休"},{"date":13,"status":"運休"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"運休"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"学休"},{"date":27,"status":"運休"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"授業"},{"date":31,"status":"学休"}],
-      "11": [{"date":1,"status":"学休"},{"date":2,"status":"運休"},{"date":3,"status":"例祭"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"運休"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"運休"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"運休"},{"date":24,"status":"授業"},{"date":25,"status":"授業"},{"date":26,"status":"授業"},{"date":27,"status":"授業"},{"date":28,"status":"授業"},{"date":29,"status":"授業"},{"date":30,"status":"運休"}],
-      "12": [{"date":1,"status":"授業"},{"date":2,"status":"授業"},{"date":3,"status":"授業"},{"date":4,"status":"授業"},{"date":5,"status":"授業"},{"date":6,"status":"授業"},{"date":7,"status":"運休"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"授業"},{"date":12,"status":"授業"},{"date":13,"status":"授業"},{"date":14,"status":"運休"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"授業"},{"date":18,"status":"授業"},{"date":19,"status":"授業"},{"date":20,"status":"授業"},{"date":21,"status":"運休"},{"date":22,"status":"授業"},{"date":23,"status":"学休"},{"date":24,"status":"運休"},{"date":25,"status":"運休"},{"date":26,"status":"運休"},{"date":27,"status":"運休"},{"date":28,"status":"運休"},{"date":29,"status":"運休"},{"date":30,"status":"運休"},{"date":31,"status":"運休"}],
-      "1": [{"date":1,"status":"運休"},{"date":2,"status":"運休"},{"date":3,"status":"運休"},{"date":4,"status":"運休"},{"date":5,"status":"運休"},{"date":6,"status":"学休"},{"date":7,"status":"授業"},{"date":8,"status":"授業"},{"date":9,"status":"授業"},{"date":10,"status":"授業"},{"date":11,"status":"運休"},{"date":12,"status":"運休"},{"date":13,"status":"授業"},{"date":14,"status":"授業"},{"date":15,"status":"授業"},{"date":16,"status":"授業"},{"date":17,"status":"学休"},{"date":18,"status":"運休"},{"date":19,"status":"運休"},{"date":20,"status":"授業"},{"date":21,"status":"授業"},{"date":22,"status":"授業"},{"date":23,"status":"授業"},{"date":24,"status":"授業"},{"date":25,"status":"運休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"},{"date":29,"status":"学休"},{"date":30,"status":"学休"},{"date":31,"status":"学休"}],
-      "2": [{"date":1,"status":"運休"},{"date":2,"status":"学休"},{"date":3,"status":"学休"},{"date":4,"status":"学休"},{"date":5,"status":"学休"},{"date":6,"status":"学休"},{"date":7,"status":"学休"},{"date":8,"status":"運休"},{"date":9,"status":"学休"},{"date":10,"status":"学休"},{"date":11,"status":"運休"},{"date":12,"status":"学休"},{"date":13,"status":"学休"},{"date":14,"status":"学休"},{"date":15,"status":"運休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"学休"},{"date":21,"status":"学休"},{"date":22,"status":"運休"},{"date":23,"status":"運休"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"}],
-      "3": [{"date":1,"status":"運休"},{"date":2,"status":"学休"},{"date":3,"status":"学休"},{"date":4,"status":"学休"},{"date":5,"status":"学休"},{"date":6,"status":"学休"},{"date":7,"status":"学休"},{"date":8,"status":"運休"},{"date":9,"status":"学休"},{"date":10,"status":"学休"},{"date":11,"status":"運休"},{"date":12,"status":"学休"},{"date":13,"status":"学休"},{"date":14,"status":"学休"},{"date":15,"status":"運休"},{"date":16,"status":"学休"},{"date":17,"status":"学休"},{"date":18,"status":"学休"},{"date":19,"status":"学休"},{"date":20,"status":"運休"},{"date":21,"status":"学休"},{"date":22,"status":"運休"},{"date":23,"status":"授業"},{"date":24,"status":"学休"},{"date":25,"status":"学休"},{"date":26,"status":"学休"},{"date":27,"status":"学休"},{"date":28,"status":"学休"},{"date":29,"status":"運休"},{"date":30,"status":"運休"},{"date":31,"status":"学休"}]
-    };
+const RAW_SCHEDULE = {
+  class_weekday:[
+    {h:8,u:[30],s:[10,20,35,45,55]},{h:9,u:[0,30],s:[15,45]},{h:10,u:[0,30],s:[15,45]},{h:11,u:[30],s:[45]},
+    {h:12,u:[15,45],s:[30]},{h:13,u:[15,50],s:[0,30]},{h:14,u:[45],s:[5]},{h:15,u:[15,50],s:[0,30]},
+    {h:16,u:[10,40],s:[25,55]},{h:17,u:[10,40],s:[25,55]},{h:18,u:[10,40],s:[25,55]},{h:19,u:[10,40],s:[25,55]},
+    {h:20,u:[10,40],s:[25,55]},{h:21,u:[10],s:[]}
+  ],
+  class_saturday:[
+    {h:8,u:[30],s:[20,45]},{h:9,u:[0,30],s:[15,45]},{h:10,u:[0,30],s:[15,45]},{h:11,u:[25],s:[40]},
+    {h:12,u:[15,45],s:[0,30]},{h:13,u:[15],s:[0,30]},{h:14,u:[15],s:[30]},{h:15,u:[10,40],s:[25]},
+    {h:16,u:[10],s:[]},{h:17,u:[],s:[]},{h:18,u:[],s:[]},{h:19,u:[],s:[]},{h:20,u:[],s:[]},{h:21,u:[],s:[]}
+  ],
+  vacation_weekday:[
+    {h:8,u:[30],s:[20,35,45]},{h:9,u:[0],s:[15,45]},{h:10,u:[30],s:[15,45]},{h:11,u:[15],s:[30]},
+    {h:12,u:[15,45],s:[30]},{h:13,u:[15],s:[0,30]},{h:14,u:[15],s:[30]},{h:15,u:[15],s:[30]},
+    {h:16,u:[10,40],s:[25,55]},{h:17,u:[10,40],s:[25,55]},{h:18,u:[10,40],s:[25,55]},{h:19,u:[10,40],s:[25,55]},
+    {h:20,u:[10,40],s:[25,55]},{h:21,u:[10],s:[]}
+  ],
+  vacation_saturday:[
+    {h:8,u:[30],s:[20,45]},{h:9,u:[0],s:[15]},{h:10,u:[0],s:[15]},{h:11,u:[15,45],s:[30]},
+    {h:12,u:[15],s:[0,30]},{h:13,u:[],s:[]},{h:14,u:[15],s:[30]},{h:15,u:[10,40],s:[25]},
+    {h:16,u:[],s:[]},{h:17,u:[],s:[]},{h:18,u:[],s:[]},{h:19,u:[],s:[]},{h:20,u:[],s:[]},{h:21,u:[],s:[]}
+  ],
+  summer:[
+    {h:8,u:[],s:[]},{h:9,u:[30],s:[20,45]},{h:10,u:[15],s:[30]},{h:11,u:[15],s:[30]},
+    {h:12,u:[15],s:[30]},{h:13,u:[15],s:[30]},{h:14,u:[15],s:[30]},{h:15,u:[15],s:[30]},
+    {h:16,u:[10,40],s:[25,55]},{h:17,u:[10,40],s:[25,55]},{h:18,u:[10,40],s:[25,55]},{h:19,u:[10],s:[]},
+    {h:20,u:[],s:[]},{h:21,u:[],s:[]}
+  ],
+  open_campus:[
+    {h:8,u:[30],s:[20,45]},{h:9,u:[0,30],s:[15,45]},{h:10,u:[],s:[]},{h:11,u:[],s:[]},
+    {h:12,u:[],s:[]},{h:13,u:[],s:[]},{h:14,u:[],s:[]},{h:15,u:[40],s:[55]},
+    {h:16,u:[10,40],s:[25,55]},{h:17,u:[10,40],s:[25]},{h:18,u:[],s:[]},{h:19,u:[],s:[]},{h:20,u:[],s:[]}
+  ],
+  festival:[
+    {h:8,u:[],s:[20,45]},{h:9,u:[],s:[15,45]},{h:10,u:[],s:[10,40]},{h:11,u:[],s:[]},
+    {h:12,u:[0,30],s:[]},{h:13,u:[0,30],s:[]},{h:14,u:[0,30],s:[]},{h:15,u:[],s:[]},
+    {h:16,u:[],s:[]},{h:17,u:[],s:[]},{h:18,u:[],s:[]}
+  ]
+};
 
-    // 時刻表データ
-    const RAW_SCHEDULE = {
-      "class_weekday": [
-        {h:8,u:[30],s:[10,20,35,45,55]}, {h:9,u:[0,30],s:[15,45]}, {h:10,u:[0,30],s:[15,45]}, {h:11,u:[30],s:[45]}, 
-        {h:12,u:[15,45],s:[30]}, {h:13,u:[15,50],s:[0,30]}, {h:14,u:[45],s:[5]}, {h:15,u:[15,50],s:[0,30]}, 
-        {h:16,u:[10,40],s:[25,55]}, {h:17,u:[10,40],s:[25,55]}, {h:18,u:[10,40],s:[25,55]}, {h:19,u:[10,40],s:[25,55]}, 
-        {h:20,u:[10,40],s:[25,55]}, {h:21,u:[10],s:[]}
-      ],
-      "class_saturday": [
-        {h:8,u:[30],s:[20,45]}, {h:9,u:[0,30],s:[15,45]}, {h:10,u:[0,30],s:[15,45]}, {h:11,u:[25],s:[40]}, 
-        {h:12,u:[15,45],s:[0,30]}, {h:13,u:[15],s:[0,30]}, {h:14,u:[15],s:[30]}, {h:15,u:[10,40],s:[25]}, 
-        {h:16,u:[10],s:[]}, {h:17,u:[],s:[]}, {h:18,u:[],s:[]}, {h:19,u:[],s:[]}, {h:20,u:[],s:[]}, {h:21,u:[],s:[]}
-      ],
-      "vacation_weekday": [
-        {h:8,u:[30],s:[20,35,45]}, {h:9,u:[0],s:[15,45]}, {h:10,u:[30],s:[15,45]}, {h:11,u:[15],s:[30]}, 
-        {h:12,u:[15,45],s:[30]}, {h:13,u:[15],s:[0,30]}, {h:14,u:[15],s:[30]}, {h:15,u:[15],s:[30]}, 
-        {h:16,u:[10,40],s:[25,55]}, {h:17,u:[10,40],s:[25,55]}, {h:18,u:[10,40],s:[25,55]}, {h:19,u:[10,40],s:[25,55]}, 
-        {h:20,u:[10,40],s:[25,55]}, {h:21,u:[10],s:[]}
-      ],
-      "vacation_saturday": [
-        {h:8,u:[30],s:[20,45]}, {h:9,u:[0],s:[15]}, {h:10,u:[0],s:[15]}, {h:11,u:[15,45],s:[30]}, 
-        {h:12,u:[15],s:[0,30]}, {h:13,u:[],s:[]}, {h:14,u:[15],s:[30]}, {h:15,u:[10,40],s:[25]}, 
-        {h:16,u:[],s:[]}, {h:17,u:[],s:[]}, {h:18,u:[],s:[]}, {h:19,u:[],s:[]}, {h:20,u:[],s:[]}, {h:21,u:[],s:[]}
-      ],
-      "summer": [
-        {h:8,u:[],s:[]}, {h:9,u:[30],s:[20,45]}, {h:10,u:[15],s:[30]}, {h:11,u:[15],s:[30]}, 
-        {h:12,u:[15],s:[30]}, {h:13,u:[15],s:[30]}, {h:14,u:[15],s:[30]}, {h:15,u:[15],s:[30]}, 
-        {h:16,u:[10,40],s:[25,55]}, {h:17,u:[10,40],s:[25,55]}, {h:18,u:[10,40],s:[25,55]}, {h:19,u:[10],s:[]}, 
-        {h:20,u:[],s:[]}, {h:21,u:[],s:[]}
-      ],
-      "open_campus": [
-        {h:8,u:[30],s:[20,45]}, {h:9,u:[0,30],s:[15,45]}, {h:10,u:[],s:[]}, {h:11,u:[],s:[]}, 
-        {h:12,u:[],s:[]}, {h:13,u:[],s:[]}, {h:14,u:[],s:[]}, {h:15,u:[40],s:[55]}, 
-        {h:16,u:[10,40],s:[25,55]}, {h:17,u:[10,40],s:[25]}, {h:18,u:[],s:[]}, {h:19,u:[],s:[]}, 
-        {h:20,u:[],s:[]}
-      ],
-      "festival": [
-        {h:8,u:[],s:[20,45]}, {h:9,u:[],s:[15,45]}, {h:10,u:[],s:[10,40]}, {h:11,u:[],s:[]}, 
-        {h:12,u:[0,30],s:[]}, {h:13,u:[0,30],s:[]}, {h:14,u:[0,30],s:[]}, {h:15,u:[],s:[]}, 
-        {h:16,u:[],s:[]}, {h:17,u:[],s:[]}, {h:18,u:[],s:[]}
-      ]
-    };
+const GC_STOPS = {
+  class_weekday:{h:8,mins:[20,35,55]},
+  vacation_weekday:{h:8,mins:[35]}
+};
 
-    // 定数定義 (ラベル修正版)
-    const TYPES = {
-        SEMESTER_WEEKDAY: { name: "授業期間 (平日)", dataKey: "class_weekday", color: "green" },
-        SEMESTER_SAT:     { name: "授業期間 (土曜)", dataKey: "class_saturday", color: "green" },
-        VACATION_WEEKDAY: { name: "学生休暇期間 (平日)", dataKey: "vacation_weekday", color: "blue" },
-        VACATION_SAT:     { name: "学生休暇期間 (土曜)", dataKey: "vacation_saturday", color: "blue" },
-        SUMMER:           { name: "夏季休暇", dataKey: "summer", color: "hotpink" },
-        OPEN_CAMPUS:      { name: "オープンキャンパス", dataKey: "open_campus", color: "orange" },
-        FESTIVAL:         { name: "秋季例祭", dataKey: "festival", color: "purple" },
-        NO_SERVICE:       { name: "バスダイヤなし", dataKey: null, color: "gray" }
-    };
+const TYPES = {
+  SEMESTER_WEEKDAY:{name:"授業期間 (平日)",dataKey:"class_weekday"},
+  SEMESTER_SAT:{name:"授業期間 (土曜)",dataKey:"class_saturday"},
+  VACATION_WEEKDAY:{name:"学生休暇期間 (平日)",dataKey:"vacation_weekday"},
+  VACATION_SAT:{name:"学生休暇期間 (土曜)",dataKey:"vacation_saturday"},
+  SUMMER:{name:"夏季休暇",dataKey:"summer"},
+  OPEN_CAMPUS:{name:"オープンキャンパス",dataKey:"open_campus"},
+  FESTIVAL:{name:"秋季例祭",dataKey:"festival"},
+  NO_SERVICE:{name:"バスダイヤなし",dataKey:null}
+};
 
-    // ==========================================
-    // 2. ロジック
-    // ==========================================
+const MONTH_NAMES = {4:"4月",5:"5月",6:"6月",7:"7月",8:"8月",9:"9月",10:"10月",11:"11月",12:"12月",1:"1月",2:"2月",3:"3月"};
+const DOW_JP = ["日","月","火","水","木","金","土"];
 
-    // 現在の方向 ('univ' = 大学発, 'station' = 高尾駅発)
-    let currentDirection = localStorage.getItem('busDirection') || 'univ';
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentDirection = localStorage.getItem('busDirection') || 'univ';
+let currentPage = 'timetable';
 
-    function init() {
-	// 3分ごとに自動更新
-	setInterval(() => {
-	    setNow();
-	}, 3 * 60 * 1000); // 3分 = 180,000ミリ秒
-        updateTabUI();
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function getYearInfo(dateStr) {
+  const d = new Date(dateStr);
+  const y = d.getFullYear(), m = d.getMonth()+1;
+  const nendo = m >= 4 ? y : y-1;
+  if (nendo === 2025) return {nendo:2025, label:"2025年度", calendar:RAW_CALENDAR_2025, hasGC:false};
+  if (nendo === 2026) return {nendo:2026, label:"2026年度", calendar:RAW_CALENDAR_2026, hasGC:true};
+  return null;
+}
 
-        // 保存されたテーマを復元
-        const savedTheme = localStorage.getItem('busTheme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-theme');
-        }
+function getScheduleType(dateStr, calendar) {
+  const d = new Date(dateStr);
+  const m = d.getMonth()+1, day = d.getDate(), dow = d.getDay();
+  const md = calendar[String(m)];
+  if (!md) return TYPES.NO_SERVICE;
+  const dd = md.find(x => x.date === day);
+  if (!dd) return TYPES.NO_SERVICE;
+  const s = dd.status;
+  if (s==="運休") return TYPES.NO_SERVICE;
+  if (s==="夏休") return TYPES.SUMMER;
+  if (s==="OC")   return TYPES.OPEN_CAMPUS;
+  if (s==="例祭") return TYPES.FESTIVAL;
+  if (s==="授業") return dow===6 ? TYPES.SEMESTER_SAT : TYPES.SEMESTER_WEEKDAY;
+  if (s==="学休") return dow===6 ? TYPES.VACATION_SAT : TYPES.VACATION_WEEKDAY;
+  return TYPES.NO_SERVICE;
+}
 
-        // イベントリスナーの設定
-        document.getElementById('dateInput').addEventListener('input', updateDisplay);
-        document.getElementById('timeInput').addEventListener('input', updateDisplay);
-        document.getElementById('nowBtn').addEventListener('click', setNow);
+function isGC(typeObj, h, m, hasGC) {
+  if (!hasGC) return false;
+  const r = GC_STOPS[typeObj.dataKey];
+  return r && r.h===h && r.mins.includes(m);
+}
 
-        // タブのクリックイベント
-        document.getElementById('tabUniv').addEventListener('click', () => switchTab('univ'));
-        document.getElementById('tabStation').addEventListener('click', () => switchTab('station'));
+function getTimes(typeObj, dir) {
+  if (!typeObj.dataKey) return [];
+  const key = dir==='univ' ? 'u' : 's';
+  const flat = [];
+  RAW_SCHEDULE[typeObj.dataKey].forEach(row => {
+    (row[key]||[]).forEach(m => flat.push({h:row.h, m}));
+  });
+  return flat.sort((a,b)=>a.h*60+a.m - b.h*60-b.m);
+}
 
-        // タイトルクリックでテーマ切り替え
-        document.querySelector('h1').addEventListener('click', toggleTheme);
+// ══════════════════════════════════════════
+// PAGE SWITCHING
+// ══════════════════════════════════════════
+function showPage(id) {
+  currentPage = id;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const tabs = document.querySelectorAll('.page-tab');
+  const order = ['timetable','calendar','fulltable'];
+  tabs[order.indexOf(id)].classList.add('active');
+}
 
-        setNow();
+// ══════════════════════════════════════════
+// TIMETABLE PAGE
+// ══════════════════════════════════════════
+function toggleTheme() {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('busTheme', document.body.classList.contains('dark') ? 'dark' : 'light');
+}
+function switchTab(dir) {
+  currentDirection = dir;
+  localStorage.setItem('busDirection', dir);
+  document.querySelectorAll('.dir-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(dir==='univ' ? 'tabUniv' : 'tabStation').classList.add('active');
+  updateDisplay();
+}
+function setNow() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('dateInput').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  document.getElementById('timeInput').value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  updateDisplay();
+}
+function updateDisplay() {
+  const dateStr = document.getElementById('dateInput').value;
+  const timeStr = document.getElementById('timeInput').value;
+  if (!dateStr || !timeStr) return;
+  const yi = getYearInfo(dateStr);
+  const badge = document.getElementById('yearBadge');
+  badge.textContent = yi ? yi.label : '対応外';
+  const sb = document.getElementById('statusBox');
+  const td = document.getElementById('scheduleTypeDisplay');
+  const dd = document.getElementById('scheduleDetail');
+  if (!yi) {
+    td.textContent = '対応年度外'; dd.textContent = '2025・2026年度のみ対応';
+    sb.className = 'status-box no-svc';
+    document.getElementById('busList').innerHTML = '<li class="no-svc-msg">対応年度外</li>';
+    return;
+  }
+  const typeObj = getScheduleType(dateStr, yi.calendar);
+  td.textContent = typeObj.name;
+  if (typeObj === TYPES.NO_SERVICE) {
+    sb.className = 'status-box no-svc';
+    dd.textContent = '本日の運行はありません';
+  } else {
+    sb.className = 'status-box';
+    dd.textContent = '';
+  }
+  const notes = [];
+  if (typeObj===TYPES.FESTIVAL && currentDirection==='station') notes.push('※10:40発は教職員駐車場行き');
+  if (yi.hasGC && currentDirection==='station' && (typeObj===TYPES.SEMESTER_WEEKDAY||typeObj===TYPES.VACATION_WEEKDAY))
+    notes.push('★印はグルメシティ高尾店前発');
+  dd.textContent = notes.join('　');
+
+  const list = document.getElementById('busList');
+  list.innerHTML = '';
+  if (typeObj===TYPES.NO_SERVICE) { list.innerHTML='<li class="no-svc-msg">バスダイヤなし</li>'; return; }
+  const buses = getTimes(typeObj, currentDirection);
+  if (!buses.length) { list.innerHTML='<li class="no-svc-msg">運行データなし</li>'; return; }
+  const [ch,cm] = timeStr.split(':').map(Number);
+  const cur = ch*60+cm;
+  let foundNext = false;
+  const pad2 = n => String(n).padStart(2,'0');
+  buses.forEach(bus => {
+    const bm = bus.h*60+bus.m;
+    const li = document.createElement('li');
+    const gc = currentDirection==='station' && isGC(typeObj, bus.h, bus.m, yi.hasGC);
+    if (bm < cur) { li.classList.add('past'); }
+    else if (!foundNext) { li.classList.add('next'); foundNext=true; setTimeout(()=>li.scrollIntoView({behavior:'smooth',block:'center'}),100); }
+    if (gc) li.classList.add('gc-stop');
+    const destTxt = currentDirection==='univ' ? '高尾駅行' : '大学行';
+    li.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
+      <span class="time-main">${pad2(bus.h)}:${pad2(bus.m)}</span>
+      <div class="badges">
+        <span class="badge dest">${destTxt}</span>
+        ${gc?'<span class="badge gc">★ グルメシティ発</span>':''}
+      </div>
+    </div>
+    ${!foundNext||li.classList.contains('next') ? (bm>=cur&&li.classList.contains('next')?'<span class="next-label">◀ 次のバス</span>':'') : ''}`;
+    // fix: re-do this properly
+    list.appendChild(li);
+  });
+  if (!foundNext) list.innerHTML += '<li class="no-svc-msg">本日の運行は終了しました</li>';
+
+  // rebuild cleanly
+  list.innerHTML = '';
+  foundNext = false;
+  buses.forEach(bus => {
+    const bm = bus.h*60+bus.m;
+    const li = document.createElement('li');
+    const gc = currentDirection==='station' && isGC(typeObj, bus.h, bus.m, yi.hasGC);
+    const isPast = bm < cur;
+    const isNext = !isPast && !foundNext;
+    if (isPast) li.classList.add('past');
+    if (isNext) { li.classList.add('next'); foundNext=true; setTimeout(()=>li.scrollIntoView({behavior:'smooth',block:'center'}),100); }
+    if (gc && !isPast) li.classList.add('gc-stop');
+    const destTxt = currentDirection==='univ' ? '高尾駅行' : '大学行';
+    li.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
+      <span class="time-main">${pad2(bus.h)}:${pad2(bus.m)}</span>
+      <div class="badges">
+        <span class="badge dest">${destTxt}</span>
+        ${(gc&&!isPast)?'<span class="badge gc">★ グルメシティ発</span>':''}
+      </div>
+    </div>${isNext?'<span class="next-label">◀ 次のバス</span>':''}`;
+    list.appendChild(li);
+  });
+  if (!foundNext) list.innerHTML += '<li class="no-svc-msg">本日の運行は終了しました</li>';
+}
+
+// ══════════════════════════════════════════
+// CALENDAR PAGE
+// ══════════════════════════════════════════
+function buildCalendar(calendar, containerId, startYear) {
+  const container = document.getElementById(containerId);
+  const monthOrder = [4,5,6,7,8,9,10,11,12,1,2,3];
+  monthOrder.forEach(m => {
+    const yr = m>=4 ? startYear : startYear+1;
+    const data = calendar[String(m)];
+    if (!data) return;
+    const card = document.createElement('div');
+    card.className = 'month-card';
+    const title = document.createElement('div');
+    title.className = 'month-title';
+    title.textContent = `${yr}年 ${MONTH_NAMES[m]}`;
+    card.appendChild(title);
+
+    const table = document.createElement('table');
+    table.className = 'cal-table';
+    // header
+    const thead = document.createElement('thead');
+    const hrow = document.createElement('tr');
+    DOW_JP.forEach((d,i) => {
+      const th = document.createElement('th');
+      th.textContent = d;
+      if (i===0) th.className='sun';
+      if (i===6) th.className='sat';
+      hrow.appendChild(th);
+    });
+    thead.appendChild(hrow);
+    table.appendChild(thead);
+
+    // body
+    const tbody = document.createElement('tbody');
+    const firstDow = new Date(yr, m-1, 1).getDay();
+    let dayCount = 1;
+    const totalDays = data.length;
+    let row;
+    for (let cell=0; cell<42; cell++) {
+      if (cell%7===0) { row=document.createElement('tr'); tbody.appendChild(row); }
+      const td = document.createElement('td');
+      if (cell < firstDow || dayCount > totalDays) {
+        row.appendChild(td); continue;
+      }
+      const entry = data[dayCount-1];
+      const dow = cell%7;
+      const cell_div = document.createElement('div');
+      cell_div.className = 'day-cell';
+      const numDiv = document.createElement('div');
+      numDiv.className = 'day-num' + (dow===0?' sun':dow===6?' sat':'');
+      numDiv.textContent = dayCount;
+      cell_div.appendChild(numDiv);
+      if (entry) {
+        const stDiv = document.createElement('div');
+        stDiv.className = `day-status s-${entry.status}`;
+        const shortMap = {授業:'授',学休:'学',運休:'休',夏休:'夏',OC:'OC',例祭:'祭'};
+        stDiv.textContent = shortMap[entry.status] || entry.status;
+        cell_div.appendChild(stDiv);
+      }
+      td.appendChild(cell_div);
+      row.appendChild(td);
+      dayCount++;
     }
+    table.appendChild(tbody);
+    card.appendChild(table);
+    container.appendChild(card);
+  });
+}
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-        localStorage.setItem('busTheme', isDark ? 'dark' : 'light');
-    }
+// ══════════════════════════════════════════
+// FULL TIMETABLE PAGE
+// ══════════════════════════════════════════
+function buildFullTimetable() {
+  const container = document.getElementById('fullTableContent');
+  const sections = [
+    {title:'授業期間（平日）', keys:['class_weekday'], showGC:true},
+    {title:'授業期間（土曜）', keys:['class_saturday'], showGC:false},
+    {title:'学生休暇期間（平日）', keys:['vacation_weekday'], showGC:true},
+    {title:'学生休暇期間（土曜）', keys:['vacation_saturday'], showGC:false},
+    {title:'夏季休暇', keys:['summer'], showGC:false},
+    {title:'オープンキャンパス', keys:['open_campus'], showGC:false},
+    {title:'秋季例祭', keys:['festival'], showGC:false},
+  ];
 
-    // 日付からダイヤタイプを取得
-    function getScheduleType(dateStr) {
-        const date = new Date(dateStr);
-        const m = date.getMonth() + 1;
-        const d = date.getDate();
-        const dayOfWeek = date.getDay(); // 0:Sun, 6:Sat
+  sections.forEach(sec => {
+    const dataKey = sec.keys[0];
+    const rawData = RAW_SCHEDULE[dataKey];
+    const section = document.createElement('div');
+    section.className = 'sched-section';
+    const secTitle = document.createElement('div');
+    secTitle.className = 'sched-title';
+    secTitle.textContent = sec.title;
+    section.appendChild(secTitle);
 
-        const monthData = RAW_CALENDAR[String(m)];
-        
-        // カレンダーにない日付はデフォルトでバスダイヤなし
-        if (!monthData) return TYPES.NO_SERVICE;
+    const grid = document.createElement('div');
+    grid.className = 'sched-grid';
 
-        const dayData = monthData.find(item => item.date === d);
-        if (!dayData) return TYPES.NO_SERVICE;
+    // Build one card for each direction
+    ['大学発 → 高尾駅','高尾駅発 → 大学'].forEach((label, di) => {
+      const key = di===0 ? 'u' : 's';
+      const card = document.createElement('div');
+      card.className = 'sched-card';
+      const cardTitle = document.createElement('div');
+      cardTitle.className = 'sched-card-title';
+      cardTitle.innerHTML = `<span>${label.split('→')[0].trim()}</span><small>→ ${label.split('→')[1].trim()}</small>`;
+      card.appendChild(cardTitle);
 
-        const status = dayData.status;
-
-        // マッピングロジック
-        if (status === "運休") return TYPES.NO_SERVICE;
-        if (status === "夏休") return TYPES.SUMMER;
-        if (status === "OC") return TYPES.OPEN_CAMPUS;
-        if (status === "例祭") return TYPES.FESTIVAL;
-
-        // 授業期間と学休期間は曜日で分岐
-        if (status === "授業") {
-            return (dayOfWeek === 6) ? TYPES.SEMESTER_SAT : TYPES.SEMESTER_WEEKDAY;
-        }
-        if (status === "学休") {
-            return (dayOfWeek === 6) ? TYPES.VACATION_SAT : TYPES.VACATION_WEEKDAY;
-        }
-
-        return TYPES.NO_SERVICE;
-    }
-
-    // 時刻表データの整形
-    function getTimes(typeObj, direction) {
-        if (!typeObj || !typeObj.dataKey) return [];
-        
-        const rawList = RAW_SCHEDULE[typeObj.dataKey];
-        const key = (direction === 'univ') ? 'u' : 's';
-
-        let flatList = [];
-        rawList.forEach(item => {
-            if (item[key] && item[key].length > 0) {
-                item[key].forEach(min => {
-                    flatList.push({ h: item.h, m: min });
-                });
-            }
+      rawData.forEach(row => {
+        const mins = row[key] || [];
+        if (!mins.length) return;
+        const hourRow = document.createElement('div');
+        hourRow.className = 'hour-row';
+        const hrLabel = document.createElement('div');
+        hrLabel.className = 'hr-label';
+        hrLabel.textContent = row.h;
+        hourRow.appendChild(hrLabel);
+        const minsDiv = document.createElement('div');
+        minsDiv.className = 'hr-mins';
+        mins.forEach(m => {
+          const span = document.createElement('span');
+          const gcRule = GC_STOPS[dataKey];
+          const isGCMin = sec.showGC && di===1 && gcRule && gcRule.h===row.h && gcRule.mins.includes(m);
+          span.className = 'min-badge' + (isGCMin ? ' gc' : '');
+          span.textContent = (isGCMin ? '★' : '') + String(m).padStart(2,'0');
+          minsDiv.appendChild(span);
         });
-        return flatList.sort((a, b) => (a.h * 60 + a.m) - (b.h * 60 + b.m));
+        hourRow.appendChild(minsDiv);
+        card.appendChild(hourRow);
+      });
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+
+    // Notes
+    if (dataKey==='festival') {
+      const note = document.createElement('div');
+      note.className = 'sched-note';
+      note.style.marginTop = '8px';
+      note.textContent = '※ 高尾駅発 10:40 は教職員駐車場行き';
+      section.appendChild(note);
+    }
+    if (sec.showGC) {
+      const note = document.createElement('div');
+      note.className = 'sched-note';
+      note.style.marginTop = '8px';
+      note.textContent = '★ 印（2026年度以降）: グルメシティ高尾店前 発';
+      section.appendChild(note);
     }
 
-    function setNow() {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
-        
-        const hh = String(now.getHours()).padStart(2, '0');
-        const min = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('timeInput').value = `${hh}:${min}`;
-        
-        updateDisplay();
-    }
+    container.appendChild(section);
+  });
+}
 
-    function switchTab(direction) {
-        currentDirection = direction;
-        localStorage.setItem('busDirection', direction);
-        updateTabUI();
-        updateDisplay();
-    }
-
-    function updateTabUI() {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        if (currentDirection === 'univ') document.getElementById('tabUniv').classList.add('active');
-        else document.getElementById('tabStation').classList.add('active');
-    }
-
-    function updateDisplay() {
-        const dateStr = document.getElementById('dateInput').value;
-        const timeStr = document.getElementById('timeInput').value;
-        
-        if (!dateStr || !timeStr) return;
-
-        // 1. ダイヤ情報の表示
-        const typeObj = getScheduleType(dateStr);
-        const statusBox = document.getElementById('statusBox');
-        const typeDisplay = document.getElementById('scheduleTypeDisplay');
-        const detailDisplay = document.getElementById('scheduleDetail');
-        
-        typeDisplay.textContent = typeObj.name;
-        
-        // 色変更
-        if (typeObj === TYPES.NO_SERVICE) {
-            statusBox.style.borderColor = "var(--status-noservice-border)";
-            statusBox.style.color = "var(--status-noservice-text)";
-            statusBox.style.background = "var(--status-noservice-bg)";
-            detailDisplay.textContent = "本日の運行はありません";
-        } else {
-            statusBox.style.borderColor = "var(--status-active-border)";
-            statusBox.style.color = "var(--status-active-text)";
-            statusBox.style.background = "linear-gradient(135deg, var(--status-active-bg-1) 0%, var(--status-active-bg-2) 100%)";
-            detailDisplay.textContent = "通常運行";
-        }
-
-        // 秋季例祭の特記事項
-        if (typeObj === TYPES.FESTIVAL && currentDirection === 'station') {
-            detailDisplay.textContent = "※10:40発は教職員駐車場行き";
-        } else {
-            if(typeObj !== TYPES.NO_SERVICE) {
-                detailDisplay.textContent = ""; // 修正: 不要なテキストをクリア
-            }
-        }
-
-        // 2. バスリストの生成
-        const listElem = document.getElementById('busList');
-        listElem.innerHTML = '';
-
-        if (typeObj === TYPES.NO_SERVICE) {
-            listElem.innerHTML = '<li class="no-service">バスダイヤなし</li>';
-            return;
-        }
-
-        const busList = getTimes(typeObj, currentDirection);
-        
-        if (busList.length === 0) {
-            listElem.innerHTML = '<li class="no-service">運行データがありません</li>';
-            return;
-        }
-
-        const [curH, curM] = timeStr.split(':').map(Number);
-        const currentMinutes = curH * 60 + curM;
-        let foundNext = false;
-
-        busList.forEach(bus => {
-            const busMinutes = bus.h * 60 + bus.m;
-            const li = document.createElement('li');
-            
-            const timeText = `${String(bus.h).padStart(2,'0')}:${String(bus.m).padStart(2,'0')}`;
-            const destText = currentDirection === 'univ' ? '高尾駅行' : '大学行';
-            
-            let html = `
-                <div>
-                    <span class="time-main">${timeText}</span>
-                    <span class="dest-badge">${destText}</span>
-                </div>
-            `;
-
-            if (busMinutes < currentMinutes) {
-                li.classList.add('past');
-            } else if (!foundNext) {
-                li.classList.add('next');
-                html += '<span class="next-label">◀ 次のバス</span>';
-                foundNext = true;
-                setTimeout(() => li.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-            }
-
-            li.innerHTML = html;
-            listElem.appendChild(li);
-        });
-
-        if (!foundNext) {
-             listElem.innerHTML += '<li class="no-service">本日の運行は終了しました</li>';
-        }
-    }
-
-    // アプリ開始
-    init();
-
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+function init() {
+  if (localStorage.getItem('busTheme')==='dark') document.body.classList.add('dark');
+  document.getElementById('dateInput').addEventListener('input', updateDisplay);
+  document.getElementById('timeInput').addEventListener('input', updateDisplay);
+  document.getElementById('nowBtn').addEventListener('click', setNow);
+  setInterval(setNow, 3*60*1000);
+  buildCalendar(RAW_CALENDAR_2025, 'cal2025', 2025);
+  buildCalendar(RAW_CALENDAR_2026, 'cal2026', 2026);
+  buildFullTimetable();
+  setNow();
+}
+init();
 </script>
-
 </body>
 </html>
-
