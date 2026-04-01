@@ -127,20 +127,27 @@ body{font-family:"LINE Seed Sans JP",-apple-system,sans-serif;background:var(--b
 /* ═══ FULL TIMETABLE PAGE ═══ */
 .sched-section{margin-bottom:28px}
 .sched-title{font-size:.85rem;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--border);text-transform:uppercase}
-.sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.sched-card{background:var(--panel-bg);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
-.sched-card-title{font-size:.78rem;font-weight:700;padding:7px 12px;background:var(--pri);color:#fff;display:flex;justify-content:space-between;align-items:center}
-.sched-card-title small{font-weight:400;font-size:.7rem;opacity:.85}
-.hour-row{display:flex;align-items:flex-start;gap:0;border-bottom:1px solid var(--border);min-height:28px}
-.hour-row:last-child{border-bottom:none}
-.hr-label{width:28px;min-width:28px;font-size:.75rem;font-weight:700;color:var(--pri);padding:5px 4px;text-align:right;background:var(--card);flex-shrink:0;border-right:1px solid var(--border)}
-.hr-mins{padding:4px 6px;display:flex;flex-wrap:wrap;gap:3px;align-items:center;flex:1}
-.min-badge{font-size:.75rem;font-weight:600;font-variant-numeric:tabular-nums;padding:1px 5px;border-radius:4px;background:var(--pri-light);color:var(--pri);white-space:nowrap}
+.sched-table{width:100%;border-collapse:collapse;background:var(--panel-bg);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.sched-table thead tr th{background:var(--pri);color:#fff;font-size:.78rem;font-weight:700;padding:8px 6px;text-align:center}
+.sched-table thead tr th.th-univ{text-align:right;padding-right:10px}
+.sched-table thead tr th.th-hour{width:38px;text-align:center}
+.sched-table thead tr th.th-station{text-align:left;padding-left:10px}
+.sched-table tbody tr{border-bottom:1px solid var(--border)}
+.sched-table tbody tr:last-child{border-bottom:none}
+.sched-table tbody tr:hover{background:var(--next-bg)}
+/* 時 — 中央 */
+.td-hour{font-size:.85rem;font-weight:700;color:var(--pri);text-align:center;padding:6px 4px;background:var(--card);border-left:1px solid var(--border);border-right:1px solid var(--border);vertical-align:middle;white-space:nowrap;width:38px}
+/* 大学発 — 右揃え、数字は右端（時の列の隣）から小さい順に並ぶ */
+.td-univ{padding:5px 8px;vertical-align:middle;text-align:right}
+.td-univ-inner{display:flex;flex-wrap:wrap;flex-direction:row-reverse;justify-content:flex-start;gap:3px;align-items:center;min-height:22px}
+/* 高尾駅発 — 左揃え、昇順 */
+.td-station{padding:5px 8px;vertical-align:middle;text-align:left}
+.td-station-inner{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:3px;align-items:center;min-height:22px}
+.min-badge{font-size:.78rem;font-weight:600;font-variant-numeric:tabular-nums;padding:2px 6px;border-radius:4px;background:var(--pri-light);color:var(--pri);white-space:nowrap}
 .min-badge.gc{background:var(--gc-bg);color:var(--gc-text);border:1px solid var(--gc-border)}
 .sched-note{font-size:.75rem;color:var(--muted);margin-top:8px;padding:8px 10px;background:var(--panel-bg);border-radius:8px;border:1px solid var(--border);line-height:1.6}
 
 @media(max-width:480px){
-  .sched-grid{grid-template-columns:1fr}
   .month-grid{grid-template-columns:1fr}
   .page-tab{font-size:.76rem;padding:9px 4px}
 }
@@ -184,6 +191,7 @@ body{font-family:"LINE Seed Sans JP",-apple-system,sans-serif;background:var(--b
   <div class="page" id="page-calendar">
     <div class="header" style="margin-bottom:10px">
       <h1>運行日程表</h1>
+      <span class="year-pill">2026年度</span>
     </div>
     <div class="cal-legend">
       <div class="leg"><div class="leg-dot" style="background:var(--s-授業)"></div>授業期間</div>
@@ -193,14 +201,7 @@ body{font-family:"LINE Seed Sans JP",-apple-system,sans-serif;background:var(--b
       <div class="leg"><div class="leg-dot" style="background:var(--s-例祭)"></div>例祭</div>
       <div class="leg"><div class="leg-dot" style="background:var(--s-運休)"></div>運休</div>
     </div>
-    <div class="cal-section">
-      <div class="cal-year-title">2025年度（令和7年度）</div>
-      <div class="month-grid" id="cal2025"></div>
-    </div>
-    <div class="cal-section">
-      <div class="cal-year-title">2026年度（令和8年度）</div>
-      <div class="month-grid" id="cal2026"></div>
-    </div>
+    <div class="month-grid" id="cal2026"></div>
   </div>
 
   <!-- ══ PAGE 3: FULL TIMETABLE ══ -->
@@ -556,82 +557,102 @@ function buildCalendar(calendar, containerId, startYear) {
 function buildFullTimetable() {
   const container = document.getElementById('fullTableContent');
   const sections = [
-    {title:'授業期間（平日）', keys:['class_weekday'], showGC:true},
-    {title:'授業期間（土曜）', keys:['class_saturday'], showGC:false},
-    {title:'学生休暇期間（平日）', keys:['vacation_weekday'], showGC:true},
-    {title:'学生休暇期間（土曜）', keys:['vacation_saturday'], showGC:false},
-    {title:'夏季休暇', keys:['summer'], showGC:false},
-    {title:'オープンキャンパス', keys:['open_campus'], showGC:false},
-    {title:'秋季例祭', keys:['festival'], showGC:false},
+    {title:'授業期間（平日）',    dataKey:'class_weekday',    showGC:true},
+    {title:'授業期間（土曜）',    dataKey:'class_saturday',   showGC:false},
+    {title:'学生休暇期間（平日）',dataKey:'vacation_weekday', showGC:true},
+    {title:'学生休暇期間（土曜）',dataKey:'vacation_saturday',showGC:false},
+    {title:'夏季休暇',            dataKey:'summer',           showGC:false},
+    {title:'オープンキャンパス',  dataKey:'open_campus',      showGC:false},
+    {title:'秋季例祭',            dataKey:'festival',         showGC:false},
   ];
 
   sections.forEach(sec => {
-    const dataKey = sec.keys[0];
-    const rawData = RAW_SCHEDULE[dataKey];
-    const section = document.createElement('div');
-    section.className = 'sched-section';
-    const secTitle = document.createElement('div');
-    secTitle.className = 'sched-title';
-    secTitle.textContent = sec.title;
-    section.appendChild(secTitle);
+    const rawData = RAW_SCHEDULE[sec.dataKey];
+    const wrap = document.createElement('div');
+    wrap.className = 'sched-section';
 
-    const grid = document.createElement('div');
-    grid.className = 'sched-grid';
+    const titleEl = document.createElement('div');
+    titleEl.className = 'sched-title';
+    titleEl.textContent = sec.title;
+    wrap.appendChild(titleEl);
 
-    // Build one card for each direction
-    ['大学発 → 高尾駅','高尾駅発 → 大学'].forEach((label, di) => {
-      const key = di===0 ? 'u' : 's';
-      const card = document.createElement('div');
-      card.className = 'sched-card';
-      const cardTitle = document.createElement('div');
-      cardTitle.className = 'sched-card-title';
-      cardTitle.innerHTML = `<span>${label.split('→')[0].trim()}</span><small>→ ${label.split('→')[1].trim()}</small>`;
-      card.appendChild(cardTitle);
+    const table = document.createElement('table');
+    table.className = 'sched-table';
 
-      rawData.forEach(row => {
-        const mins = row[key] || [];
-        if (!mins.length) return;
-        const hourRow = document.createElement('div');
-        hourRow.className = 'hour-row';
-        const hrLabel = document.createElement('div');
-        hrLabel.className = 'hr-label';
-        hrLabel.textContent = row.h;
-        hourRow.appendChild(hrLabel);
-        const minsDiv = document.createElement('div');
-        minsDiv.className = 'hr-mins';
-        mins.forEach(m => {
-          const span = document.createElement('span');
-          const gcRule = GC_STOPS[dataKey];
-          const isGCMin = sec.showGC && di===1 && gcRule && gcRule.h===row.h && gcRule.mins.includes(m);
-          span.className = 'min-badge' + (isGCMin ? ' gc' : '');
-          span.textContent = (isGCMin ? '★' : '') + String(m).padStart(2,'0');
-          minsDiv.appendChild(span);
-        });
-        hourRow.appendChild(minsDiv);
-        card.appendChild(hourRow);
+    // thead
+    const thead = document.createElement('thead');
+    thead.innerHTML = `<tr>
+      <th class="th-univ">大学発 → 高尾駅</th>
+      <th class="th-hour">時</th>
+      <th class="th-station">高尾駅発 → 大学</th>
+    </tr>`;
+    table.appendChild(thead);
+
+    // tbody
+    const tbody = document.createElement('tbody');
+    const gcRule = GC_STOPS[sec.dataKey];
+
+    rawData.forEach(row => {
+      const uMins = row.u || [];
+      const sMins = row.s || [];
+      if (!uMins.length && !sMins.length) return;
+
+      const tr = document.createElement('tr');
+
+      // ── 大学発（右揃え・降順：右が若い数字）──
+      const tdU = document.createElement('td');
+      tdU.className = 'td-univ';
+      const innerU = document.createElement('div');
+      innerU.className = 'td-univ-inner';
+      // 昇順ソート後に row-reverse で右端が最小値になる
+      [...uMins].sort((a,b) => a-b).forEach(m => {
+        const sp = document.createElement('span');
+        sp.className = 'min-badge';
+        sp.textContent = String(m).padStart(2,'0');
+        innerU.appendChild(sp);
       });
-      grid.appendChild(card);
+      tdU.appendChild(innerU);
+      tr.appendChild(tdU);
+
+      // ── 時（中央）──
+      const tdH = document.createElement('td');
+      tdH.className = 'td-hour';
+      tdH.textContent = row.h;
+      tr.appendChild(tdH);
+
+      // ── 高尾駅発（左揃え・昇順）──
+      const tdS = document.createElement('td');
+      tdS.className = 'td-station';
+      const innerS = document.createElement('div');
+      innerS.className = 'td-station-inner';
+      [...sMins].sort((a,b) => a-b).forEach(m => {
+        const sp = document.createElement('span');
+        const isGCMin = sec.showGC && gcRule && gcRule.h===row.h && gcRule.mins.includes(m);
+        sp.className = 'min-badge' + (isGCMin ? ' gc' : '');
+        sp.textContent = (isGCMin ? '★' : '') + String(m).padStart(2,'0');
+        innerS.appendChild(sp);
+      });
+      tdS.appendChild(innerS);
+      tr.appendChild(tdS);
+
+      tbody.appendChild(tr);
     });
+    table.appendChild(tbody);
+    wrap.appendChild(table);
 
-    section.appendChild(grid);
-
-    // Notes
-    if (dataKey==='festival') {
-      const note = document.createElement('div');
-      note.className = 'sched-note';
-      note.style.marginTop = '8px';
-      note.textContent = '※ 高尾駅発 10:40 は教職員駐車場行き';
-      section.appendChild(note);
-    }
-    if (sec.showGC) {
-      const note = document.createElement('div');
-      note.className = 'sched-note';
-      note.style.marginTop = '8px';
-      note.textContent = '★ 印（2026年度以降）: グルメシティ高尾店前 発';
-      section.appendChild(note);
+    // notes
+    const notes = [];
+    if (sec.dataKey === 'festival') notes.push('※ 高尾駅発 10:40 は教職員駐車場行き');
+    if (sec.showGC) notes.push('★ 印（2026年度以降）: グルメシティ高尾店前 発');
+    if (notes.length) {
+      const noteDiv = document.createElement('div');
+      noteDiv.className = 'sched-note';
+      noteDiv.style.marginTop = '8px';
+      noteDiv.innerHTML = notes.join('<br>');
+      wrap.appendChild(noteDiv);
     }
 
-    container.appendChild(section);
+    container.appendChild(wrap);
   });
 }
 
@@ -644,7 +665,6 @@ function init() {
   document.getElementById('timeInput').addEventListener('input', updateDisplay);
   document.getElementById('nowBtn').addEventListener('click', setNow);
   setInterval(setNow, 3*60*1000);
-  buildCalendar(RAW_CALENDAR_2025, 'cal2025', 2025);
   buildCalendar(RAW_CALENDAR_2026, 'cal2026', 2026);
   buildFullTimetable();
   setNow();
